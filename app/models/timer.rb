@@ -1,5 +1,5 @@
 class Timer
-  attr_accessor :starting_time_min, :remaining_sec, :running, :completed
+  attr_accessor :starting_time_min, :remaining_sec, :running
 
   def initialize starting_time_min=25
     @starting_time_min = starting_time_min
@@ -8,26 +8,24 @@ class Timer
 
   def start
     @running = true
-    async_decrement
+    async_timer_management
   end
 
-  def async_decrement
-    #TODO shouldn't use NSTimer ?
-    Dispatch::Queue.concurrent.async do
-      @remaining_sec.times.each do |time|
-        decrement_or_exit
-      end
-    end
+  def async_timer_management
+    @ns_timer = NSTimer.timerWithTimeInterval(1.0, target: self, selector: 'decrement_or_exit', userInfo: nil, repeats: true)
+    NSRunLoop.mainRunLoop.addTimer(@ns_timer, forMode: NSRunLoopCommonModes)
   end
 
   def decrement_or_exit
     if running? && !finished?
-      sleep(1)
       @remaining_sec -= 1
     else
       stop
-      return true
     end
+  end
+
+  def stop_run_loop_timer
+    @ns_timer.invalidate
   end
 
   def running?
@@ -43,6 +41,7 @@ class Timer
   end
 
   def stop
+    stop_run_loop_timer
     @running = false
     @remaining_sec = starting_time_min * 60
   end

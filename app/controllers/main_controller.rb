@@ -17,32 +17,28 @@ class MainController < UIViewController
     @background = load_background
     @top_colored_circle = load_colored_circle(top_clock_color, top_clock_position)
     @top_filling_circle = load_filling_circle(top_clock_position)
-    @top_countdown_label = load_countdown_label(top_clock_position, '25')
+    @top_timer_label = load_timer_label(top_clock_position, '25')
     @bottom_colored_circle = load_colored_circle(bottom_clock_color, bottom_clock_position)
     @bottom_filling_circle = load_filling_circle(bottom_clock_position)
-    @bottom_countdown_label = load_countdown_label(bottom_clock_position, '5')
+    @bottom_timer_label = load_timer_label(bottom_clock_position, '5')
 
     view.addSubview(@background)
     view.addSubview(@top_colored_circle)
     view.addSubview(@top_filling_circle)
-    view.addSubview(@top_countdown_label)
+    view.addSubview(@top_timer_label)
     view.addSubview(@bottom_colored_circle)
     view.addSubview(@bottom_filling_circle)
-    view.addSubview(@bottom_countdown_label)
+    view.addSubview(@bottom_timer_label)
 
     @top_filling_circle.when_tapped do
       start_top_timer
-    end
-
-    @bottom_filling_circle.when_tapped do
-      start_bottom_timer
     end
   end
 
   def start_top_timer
 
     if !@top_timer
-      @top_timer = Timer.new(@top_countdown_label.text.to_i)
+      @top_timer = Timer.new(@top_timer_label.text.to_i)
       @top_timer.start
     elsif @top_timer.running?
       @top_timer.stop
@@ -52,47 +48,27 @@ class MainController < UIViewController
     end
 
     #TODO set only if not already set
-    set_async_label_refresh
+    set_async_top_timer_refresh
   end
 
-  def start_bottom_timer
-
-    if !@bottom_timer
-      @bottom_timer = Timer.new(@bottom_countdown_label.text.to_i)
-      @bottom_timer.start
-    elsif @bottom_timer.running?
-      @bottom_timer.stop
-      update_label
-    elsif @bottom_timer.stopped?
-      @bottom_timer.start
-    end
-
-    #TODO set only if not already set
-    set_async_label_refresh
-  end
-
-  def set_async_label_refresh
-    timer = NSTimer.timerWithTimeInterval(1.0, target: self, selector: 'update_label', userInfo: nil, repeats: true)
-    NSRunLoop.mainRunLoop.addTimer(timer, forMode: NSRunLoopCommonModes)
+  def set_async_top_timer_refresh
+    @top_ns_timer = NSTimer.timerWithTimeInterval(1.0, target: self, selector: 'update_label', userInfo: nil, repeats: true)
+    NSRunLoop.mainRunLoop.addTimer(@top_ns_timer, forMode: NSRunLoopCommonModes)
   end
 
   def update_label
     if @top_timer
-      @top_countdown_label.text = @top_timer.remaining_time
-    end
-
-    if @bottom_timer
-      @bottom_countdown_label.text = @bottom_timer.remaining_time
+      @top_timer_label.text = @top_timer.remaining_time
     end
   end
 
-  def load_countdown_label(position, default_time)
-    countdown_label = UILabel.alloc.initWithFrame([[0,0], [100, 30]])
-    countdown_label.center = position
-    countdown_label.text = default_time
-    countdown_label.textAlignment = UITextAlignmentCenter
-    countdown_label.textColor = UIColor.whiteColor
-    countdown_label
+  def load_timer_label(position, default_time)
+    timer_label = UILabel.alloc.initWithFrame([[0,0], [100, 30]])
+    timer_label.center = position
+    timer_label.text = default_time
+    timer_label.textAlignment = UITextAlignmentCenter
+    timer_label.textColor = UIColor.whiteColor
+    timer_label
   end
 
   def load_colored_circle(color, position)

@@ -2,6 +2,7 @@ describe Timer do
   before do
     @subject = Timer.new
   end
+
   describe '#initialize' do
 
     it 'should assign @starting_time_min' do
@@ -86,6 +87,18 @@ describe Timer do
         wait 1 do
           @subject.stopped?.should == true
         end
+      end
+    end
+  end
+
+  describe '#stop_run_loop_timer' do
+    it 'should stop to decrement when timer is stopped' do
+      @subject.start
+      wait 1 do
+        @subject.stop_run_loop_timer
+      end
+      wait 2 do
+        @subject.remaining_sec.should == 1499
       end
     end
   end
