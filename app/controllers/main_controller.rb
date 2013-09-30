@@ -1,12 +1,10 @@
 class MainController < UIViewController
   def loadView
-    self.view = UIImageView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+    self.view = UIView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
   end
 
   def viewDidLoad
     super
-    view.image = UIImage.imageNamed('transparent-background.png')
-    view.backgroundColor = UIColor.darkGrayColor
     top_clock_position =
       [view.frame.size.width / 2,
        view.frame.size.height / 4]
@@ -16,6 +14,7 @@ class MainController < UIViewController
        (view.frame.size.height.to_f / 4) * 3]
     bottom_clock_color = UIColor.colorWithRed(0.929, green: 0.231, blue: 0.431, alpha: 1)
 
+    @background = load_background
     @top_colored_circle = load_colored_circle(top_clock_color, top_clock_position)
     @top_filling_circle = load_filling_circle(top_clock_position)
     @top_countdown_label = load_countdown_label(top_clock_position, '25')
@@ -31,24 +30,41 @@ class MainController < UIViewController
     view.addSubview(@bottom_filling_circle)
     view.addSubview(@bottom_countdown_label)
 
-    view.when_tapped do
+    @top_filling_circle.when_tapped do
       start_top_timer
+    end
+
+    @bottom_filling_circle.when_tapped do
+      start_bottom_timer
     end
   end
 
   def start_top_timer
 
     if !@top_timer
-      # App.alert("Let's start timer!")
       @top_timer = Timer.new(@top_countdown_label.text.to_i)
       @top_timer.start
     elsif @top_timer.running?
-      # App.alert("Timer stopped!")
       @top_timer.stop
       update_label
     elsif @top_timer.stopped?
-      # App.alert("Let's RE-start timer!")
       @top_timer.start
+    end
+
+    #TODO set only if not already set
+    set_async_label_refresh
+  end
+
+  def start_bottom_timer
+
+    if !@bottom_timer
+      @bottom_timer = Timer.new(@bottom_countdown_label.text.to_i)
+      @bottom_timer.start
+    elsif @bottom_timer.running?
+      @bottom_timer.stop
+      update_label
+    elsif @bottom_timer.stopped?
+      @bottom_timer.start
     end
 
     #TODO set only if not already set
@@ -61,7 +77,13 @@ class MainController < UIViewController
   end
 
   def update_label
-    @top_countdown_label.text = @top_timer.remaining_time
+    if @top_timer
+      @top_countdown_label.text = @top_timer.remaining_time
+    end
+
+    if @bottom_timer
+      @bottom_countdown_label.text = @bottom_timer.remaining_time
+    end
   end
 
   def load_countdown_label(position, default_time)
@@ -87,5 +109,12 @@ class MainController < UIViewController
     filling_circle.center = position
     filling_circle.backgroundColor = UIColor.darkGrayColor
     filling_circle
+  end
+
+  def load_background
+    background = UIImageView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+    background.image = UIImage.imageNamed('transparent-background.png')
+    background.backgroundColor = UIColor.darkGrayColor
+    background
   end
 end
