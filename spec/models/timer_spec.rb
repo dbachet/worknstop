@@ -47,18 +47,18 @@ describe Timer do
     end
   end
 
-  describe '#remaining_time' do
-    it 'should return a string with starting time' do
+  describe '#remaining_sec' do
+    it 'should return a string with remaining seconds at start' do
       @subject.start
-      @subject.remaining_time.should == '25:00'
+      @subject.remaining_sec.should == 0
       @subject.stop
     end
 
-    it 'should be 5 seconds less than starting time' do
+    it 'should be 5 seconds less than remaining seconds at starting time' do
       @subject = Timer.new
       @subject.start
       wait 5.0 do
-        @subject.remaining_time.should == '24:55'
+        @subject.remaining_sec.should == 55
         @subject.stop
       end
     end

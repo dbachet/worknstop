@@ -46,9 +46,11 @@ class Timer
     @remaining_time_in_sec = starting_time_in_min * 60
   end
 
-  def remaining_time
-    min = @remaining_time_in_sec / 60
-    sec = @remaining_time_in_sec - (min * 60)
-    "#{min}:#{sec.to_s.rjust(2,'0')}"
+  def remaining_min
+    @remaining_time_in_sec / 60
+  end
+
+  def remaining_sec
+    @remaining_time_in_sec - (remaining_min * 60)
   end
 end
