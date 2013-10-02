@@ -1,6 +1,5 @@
 class MainController < UIViewController
-  include TimerViews
-  attr_accessor :top_timer, :top_timer_label_min, :top_timer_label_sec, :bottom_timer, :bottom_timer_label_min, :bottom_timer_label_sec, :top_ns_timer, :bottom_ns_timer
+  include TimerHelper
 
   def loadView
     self.view = UIView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
@@ -46,66 +45,10 @@ class MainController < UIViewController
     end
   end
 
-  def start_timer(position)
-    if !get_timer(position)
-      set_timer(position, Timer.new(get_timer_label_min(position).text.to_i))
-      get_timer(position).start
-    elsif get_timer(position).running?
-      get_timer(position).stop
-      send("refresh_#{position}_timer_label")
-    elsif get_timer(position).stopped?
-      get_timer(position).start
-    end
-
-    #TODO set only if not already set
-    set_async_timer_refresh(position)
-  end
-
-  def set_async_timer_refresh(position)
-    set_ns_timer(position, NSTimer.timerWithTimeInterval(1.0, target: self, selector: "refresh_#{position}_timer_label", userInfo: nil, repeats: true))
-    NSRunLoop.mainRunLoop.addTimer(get_ns_timer(position), forMode: NSRunLoopCommonModes)
-  end
-
-  def refresh_top_timer_label
-    if @top_timer
-      @top_timer_label_min.text = @top_timer.remaining_min.to_s
-      @top_timer_label_sec.text = @top_timer.remaining_sec.to_s.rjust(2,'0')
-    end
-  end
-
-  def refresh_bottom_timer_label
-    if @bottom_timer
-      @bottom_timer_label_min.text = @bottom_timer.remaining_min.to_s
-      @bottom_timer_label_sec.text = @bottom_timer.remaining_sec.to_s.rjust(2,'0')
-    end
-  end
-
   def load_background
     background = UIImageView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     background.image = UIImage.imageNamed('transparent-background.png')
     background.backgroundColor = UIColor.darkGrayColor
     background
-  end
-
-  private
-
-  def get_timer(position)
-    self.send("#{position}_timer")
-  end
-
-  def set_timer(position, val)
-    self.send("#{position}_timer=", val)
-  end
-
-  def get_timer_label_min(position)
-    self.send("#{position}_timer_label_min")
-  end
-
-  def get_ns_timer(position)
-    self.send("#{position}_ns_timer")
-  end
-
-  def set_ns_timer(position, val)
-    self.send("#{position}_ns_timer=", val)
   end
 end
