@@ -5,12 +5,12 @@ describe Timer do
 
   describe '#initialize' do
 
-    it 'should assign @starting_time_min' do
-      @subject.starting_time_min.should == 25
+    it 'should assign @starting_time_in_min' do
+      @subject.starting_time_in_min.should == 25
     end
 
-    it 'should assign @remaining_sec' do
-      @subject.remaining_sec.should == 1500
+    it 'should assign @remaining_time_in_sec' do
+      @subject.remaining_time_in_sec.should == 1500
     end
   end
 
@@ -35,7 +35,7 @@ describe Timer do
       @subject.start
       @subject.stop
       @subject.running.should == false
-      @subject.remaining_sec.should == (@subject.starting_time_min * 60)
+      @subject.remaining_time_in_sec.should == (@subject.starting_time_in_min * 60)
     end
   end
 
@@ -58,35 +58,8 @@ describe Timer do
       @subject = Timer.new
       @subject.start
       wait 5.0 do
-        @subject.remaining_time.should == '24:56'
+        @subject.remaining_time.should == '24:55'
         @subject.stop
-      end
-    end
-  end
-
-  describe '#decrement_or_exit' do
-
-    before { @subject.running = true }
-
-    describe 'when should continue to decrement' do
-
-      it 'should decrement @remaining_sec' do
-        @subject.decrement_or_exit
-        wait 1 do
-          @subject.remaining_sec.should == 1499
-        end
-      end
-    end
-
-    describe 'when should continue to decrement' do
-
-      before { @subject.remaining_sec = 0 }
-
-      it 'should decrement @remaining_sec' do
-        @subject.decrement_or_exit
-        wait 1 do
-          @subject.stopped?.should == true
-        end
       end
     end
   end
@@ -98,19 +71,19 @@ describe Timer do
         @subject.stop_run_loop_timer
       end
       wait 2 do
-        @subject.remaining_sec.should == 1499
+        @subject.remaining_time_in_sec.should == 1499
       end
     end
   end
 
-  describe '#finished?' do
-    it 'should be completed' do
-      @subject = Timer.new(1)
-      @subject.start
-      wait 62 do
-        @subject.remaining_time.should == '0:00'
-        @subject.finished?.should == true
-      end
-    end
-  end
+  # describe '#finished?' do
+  #   it 'should be completed' do
+  #     @subject = Timer.new(1)
+  #     @subject.start
+  #     wait 62 do
+  #       @subject.remaining_time.should == '0:00'
+  #       @subject.finished?.should == true
+  #     end
+  #   end
+  # end
 end

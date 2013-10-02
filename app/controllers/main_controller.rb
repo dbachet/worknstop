@@ -1,4 +1,8 @@
 class MainController < UIViewController
+
+  include TimerViews
+  attr_accessor :top_timer, :top_timer_label, :bottom_timer, :bottom_timer_label, :top_ns_timer, :bottom_ns_timer
+
   def loadView
     self.view = UIView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
   end
@@ -31,60 +35,44 @@ class MainController < UIViewController
     view.addSubview(@bottom_timer_label)
 
     @top_filling_circle.when_tapped do
-      start_top_timer
+      start_timer('top')
+    end
+
+    @bottom_filling_circle.when_tapped do
+      start_timer('bottom')
     end
   end
 
-  def start_top_timer
-
-    if !@top_timer
-      @top_timer = Timer.new(@top_timer_label.text.to_i)
-      @top_timer.start
-    elsif @top_timer.running?
-      @top_timer.stop
-      update_label
-    elsif @top_timer.stopped?
-      @top_timer.start
+  def start_timer(position)
+    if !get_timer(position)
+      set_timer(position, Timer.new(get_timer_label(position).text.to_i))
+      get_timer(position).start
+    elsif get_timer(position).running?
+      get_timer(position).stop
+      send("refresh_#{position}_timer_label")
+    elsif get_timer(position).stopped?
+      get_timer(position).start
     end
 
     #TODO set only if not already set
-    set_async_top_timer_refresh
+    set_async_timer_refresh(position)
   end
 
-  def set_async_top_timer_refresh
-    @top_ns_timer = NSTimer.timerWithTimeInterval(1.0, target: self, selector: 'update_label', userInfo: nil, repeats: true)
-    NSRunLoop.mainRunLoop.addTimer(@top_ns_timer, forMode: NSRunLoopCommonModes)
+  def set_async_timer_refresh(position)
+    set_ns_timer(position, NSTimer.timerWithTimeInterval(1.0, target: self, selector: "refresh_#{position}_timer_label", userInfo: nil, repeats: true))
+    NSRunLoop.mainRunLoop.addTimer(get_ns_timer(position), forMode: NSRunLoopCommonModes)
   end
 
-  def update_label
+  def refresh_top_timer_label
     if @top_timer
       @top_timer_label.text = @top_timer.remaining_time
     end
   end
 
-  def load_timer_label(position, default_time)
-    timer_label = UILabel.alloc.initWithFrame([[0,0], [100, 30]])
-    timer_label.center = position
-    timer_label.text = default_time
-    timer_label.textAlignment = UITextAlignmentCenter
-    timer_label.textColor = UIColor.whiteColor
-    timer_label
-  end
-
-  def load_colored_circle(color, position)
-    colored_circle = UIView.alloc.initWithFrame([[0, 0], [200, 200]])
-    colored_circle.layer.cornerRadius = 100
-    colored_circle.center = position
-    colored_circle.backgroundColor = color
-    colored_circle
-  end
-
-  def load_filling_circle(position)
-    filling_circle = UIView.alloc.initWithFrame([[0, 0], [180, 180]])
-    filling_circle.layer.cornerRadius = 90
-    filling_circle.center = position
-    filling_circle.backgroundColor = UIColor.darkGrayColor
-    filling_circle
+  def refresh_bottom_timer_label
+    if @bottom_timer
+      @bottom_timer_label.text = @bottom_timer.remaining_time
+    end
   end
 
   def load_background
@@ -92,5 +80,31 @@ class MainController < UIViewController
     background.image = UIImage.imageNamed('transparent-background.png')
     background.backgroundColor = UIColor.darkGrayColor
     background
+  end
+
+  private
+
+  def get_timer(position)
+    self.send("#{position}_timer")
+  end
+
+  def set_timer(position, val)
+    self.send("#{position}_timer=", val)
+  end
+
+  def get_timer_label(position)
+    self.send("#{position}_timer_label")
+  end
+
+  def set_timer_label(position, val)
+    self.send("#{position}_timer_label=", val)
+  end
+
+  def get_ns_timer(position)
+    self.send("#{position}_ns_timer")
+  end
+
+  def set_ns_timer(position, val)
+    self.send("#{position}_ns_timer=", val)
   end
 end

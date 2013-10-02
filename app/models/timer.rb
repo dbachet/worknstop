@@ -1,9 +1,9 @@
 class Timer
-  attr_accessor :starting_time_min, :remaining_sec, :running
+  attr_accessor :starting_time_in_min, :remaining_time_in_sec, :running
 
-  def initialize starting_time_min=25
-    @starting_time_min = starting_time_min
-    @remaining_sec = starting_time_min * 60
+  def initialize starting_time_in_min=25
+    @starting_time_in_min = starting_time_in_min
+    @remaining_time_in_sec = starting_time_in_min * 60
   end
 
   def start
@@ -18,7 +18,7 @@ class Timer
 
   def decrement_or_exit
     if running? && !finished?
-      @remaining_sec -= 1
+      @remaining_time_in_sec -= 1
     else
       stop
     end
@@ -37,18 +37,18 @@ class Timer
   end
 
   def finished?
-    @remaining_sec == 0
+    @remaining_time_in_sec == 0
   end
 
   def stop
     stop_run_loop_timer
     @running = false
-    @remaining_sec = starting_time_min * 60
+    @remaining_time_in_sec = starting_time_in_min * 60
   end
 
   def remaining_time
-    min = @remaining_sec / 60
-    sec = @remaining_sec - (min * 60)
+    min = @remaining_time_in_sec / 60
+    sec = @remaining_time_in_sec - (min * 60)
     "#{min}:#{sec.to_s.rjust(2,'0')}"
   end
 end
