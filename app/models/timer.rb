@@ -19,6 +19,7 @@ class Timer
   def decrement_or_exit
     if running? && !finished?
       @remaining_time_in_sec -= 1
+      ring_bells if finished?
     else
       stop
     end
@@ -44,6 +45,10 @@ class Timer
     stop_run_loop_timer
     @running = false
     @remaining_time_in_sec = starting_time_in_min * 60
+  end
+
+  def ring_bells
+    SystemSounds.play_system_sound('Glass.aiff')
   end
 
   def remaining_min
