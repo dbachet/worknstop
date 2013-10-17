@@ -1,16 +1,15 @@
 describe Timer do
   before do
-    @subject = Timer.new
+    @subject = Timer.new(requested_time_in_min: 25, name: 'top')
   end
 
   describe '#initialize' do
-
-    it 'should assign @starting_time_in_min' do
-      @subject.starting_time_in_min.should == 25
+    it 'should assign @requested_time_in_min' do
+      @subject.requested_time_in_min.should == 25
     end
 
-    it 'should assign @remaining_time_in_sec' do
-      @subject.remaining_time_in_sec.should == 1500
+    it 'should assign @name' do
+      @subject.name.should == 'top'
     end
   end
 
@@ -18,7 +17,20 @@ describe Timer do
     it 'should assign @running to true' do
       @subject.start
       @subject.running.should == true
-      @subject.stop
+
+      @subject.stop # after spec
+    end
+  end
+
+  describe '#set_alarm' do
+    it 'should schedule a local notification' do
+      fireDate = Time.now + 1500
+      @subject.set_alarm
+      notifications = App.shared.scheduledLocalNotifications
+      notifications.count.should == 1
+      notifications.first.fireDate.to_i.should == fireDate.to_i
+
+      @subject.cancel_notification # after spec
     end
   end
 
@@ -26,16 +38,26 @@ describe Timer do
     it 'should be true' do
       @subject.start
       @subject.running?.should == true
-      @subject.stop
+
+      @subject.stop # after spec
     end
   end
 
   describe '#stop' do
-    it 'should assign @running to true' do
+    it 'should assign @running to false' do
       @subject.start
       @subject.stop
       @subject.running.should == false
-      @subject.remaining_time_in_sec.should == (@subject.starting_time_in_min * 60)
+    end
+  end
+
+  describe '#cancel_notification' do
+    it 'should assign @notification to nil and cancel local notification' do
+      @subject.start
+      @subject.cancel_notification
+      @subject.notification.should == nil
+      App.shared.scheduledLocalNotifications.should == []
+      App.shared.applicationIconBadgeNumber.should == 0
     end
   end
 
@@ -48,42 +70,24 @@ describe Timer do
   end
 
   describe '#remaining_sec' do
-    it 'should return a string with remaining seconds at start' do
+    it 'should return a string with remaining seconds' do
       @subject.start
       @subject.remaining_sec.should == 0
-      @subject.stop
-    end
-
-    it 'should be 5 seconds less than remaining seconds at starting time' do
-      @subject = Timer.new
-      @subject.start
       wait 5.0 do
         @subject.remaining_sec.should == 55
-        @subject.stop
       end
+      @subject.stop
     end
   end
 
-  describe '#stop_run_loop_timer' do
-    it 'should stop to decrement when timer is stopped' do
+  describe '#remaining_min' do
+    it 'should return a string with remaining min' do
       @subject.start
-      wait 1 do
-        @subject.stop_run_loop_timer
+      @subject.remaining_min.should == 25
+      wait 5.0 do
+        @subject.remaining_min.should == 24
       end
-      wait 2 do
-        @subject.remaining_time_in_sec.should == 1499
-      end
+      @subject.stop
     end
   end
-
-  # describe '#finished?' do
-  #   it 'should be completed' do
-  #     @subject = Timer.new(1)
-  #     @subject.start
-  #     wait 62 do
-  #       @subject.remaining_time.should == '0:00'
-  #       @subject.finished?.should == true
-  #     end
-  #   end
-  # end
 end

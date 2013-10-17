@@ -1,10 +1,10 @@
 class Timer
-  attr_accessor :requested_time_in_min, :running, :notification, :alarm_set_at
+  attr_accessor :requested_time_in_min, :name, :running, :notification, :alarm_set_at
 
   def initialize options={}
-    raise ArgumentError if options[:position].nil?
+    raise ArgumentError if options[:name].nil?
 
-    @position              = options[:position]
+    @name                  = options[:name]
     @requested_time_in_min = options[:requested_time_in_min] || 25
   end
 
@@ -14,67 +14,48 @@ class Timer
   end
 
   def set_alarm
-    @alarm_set_at                            = Time.now + (@requested_time_in_min * 1)
+    @alarm_set_at                            = Time.now + (@requested_time_in_min * 60)
     @notification                            = UILocalNotification.alloc.init
     @notification.soundName                  = 'alarm.caf'#UILocalNotificationDefaultSoundName
     @notification.hasAction                  = true
     @notification.alertAction                = 'wooohoo'
     @notification.alertBody                  = "You might have to do something now!"
     @notification.applicationIconBadgeNumber = 1
-    @notification.userInfo                   = { position: @position }
+    @notification.userInfo                   = { name: @name }
     @notification.fireDate                   = @alarm_set_at
     NSLog("Set notification at #{@notification.fireDate}")
     App.shared.scheduleLocalNotification(notification)
   end
 
   def cancel_notification
-    NSLog("cancel notification #{@notification.userInfo[:position]}")
+    NSLog("Cancel notification #{@notification.userInfo[:name]}")
     App.shared.cancelLocalNotification(@notification)
     @notification = nil
-    # icon_badge_number = App.shared.applicationIconBadgeNumber
     App.shared.setApplicationIconBadgeNumber(0)
   end
-
-  # def decrement_or_exit
-  #   if running? && !finished?
-  #     @remaining_time_in_sec -= 1
-  #     ring_bells if finished?
-  #   else
-  #     stop
-  #   end
-  # end
 
   def running?
     @running == true
   end
 
   def stopped?
-    @running == false
+    !running?
   end
-
-  # def finished?
-  #   @remaining_time_in_sec == 0
-  # end
 
   def stop
     @running = false
-    # reset_timer
     cancel_notification
   end
-
-  # def reset_timer
-  #   @alarm_set_at = Time.now + (requested_time_in_min * 1)
-  # end
 
   # def ring_bells
   #   SystemSounds.play_system_sound('Glass.aiff')
   # end
 
   def remaining_min
-    ((@alarm_set_at - Time.now) / 60)
+    ((@alarm_set_at - Time.now).ceil / 60)
   end
 
   def remaining_sec
-    ((@alarm_set_at - Time.now) - (remaining_min.to_i * 60)).ceil
+    (@alarm_set_at - Time.now).ceil % 60
   end
 end
