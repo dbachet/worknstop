@@ -1,5 +1,6 @@
 describe Timer do
   before do
+    App.shared.cancelAllLocalNotifications
     @subject = Timer.new(requested_time_in_min: 25, name: 'top')
   end
 
