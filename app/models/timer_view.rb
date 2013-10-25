@@ -175,7 +175,7 @@ class TimerView < UIControl
 
   def refresh_labels
     self.label_min.text = self.timer.remaining_min.to_s
-    self.label_sec.text = self.timer.remaining_sec.to_s
+    self.label_sec.text = self.timer.remaining_sec.to_s.rjust(2,'0')
   end
 
   def load_colored_circle(color, center_coordinates)
