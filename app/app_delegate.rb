@@ -19,29 +19,29 @@ class AppDelegate
     end
   end
 
-  def applicationWillEnterForeground(application)
-    resetIconBadge
-    top_timer = @window.rootViewController.top_timer
-    bottom_timer = @window.rootViewController.bottom_timer
+  # def applicationWillEnterForeground(application)
+  #   resetIconBadge
+  #   top_timer = @window.rootViewController.top_timer
+  #   bottom_timer = @window.rootViewController.bottom_timer
 
-    if top_timer && top_timer.running?
-      @main_vc.refresh_top_timer_label
+  #   if top_timer && top_timer.running?
+  #     @main_vc.refresh_top_timer_label
 
-      if top_timer.alarm_set_at < Time.now
-        @main_vc.stop_timer('top')
-        App.alert("Top timer has finished!")
-      end
-    end
+  #     if top_timer.alarm_set_at < Time.now
+  #       @main_vc.stop_timer('top')
+  #       App.alert("Top timer has finished!")
+  #     end
+  #   end
 
-    if bottom_timer && bottom_timer.running?
-      @main_vc.refresh_bottom_timer_label
+  #   if bottom_timer && bottom_timer.running?
+  #     @main_vc.refresh_bottom_timer_label
 
-      if bottom_timer.alarm_set_at < Time.now
-        @main_vc.stop_timer('bottom')
-        App.alert('Bottom timer has finished!')
-      end
-    end
-  end
+  #     if bottom_timer.alarm_set_at < Time.now
+  #       @main_vc.stop_timer('bottom')
+  #       App.alert('Bottom timer has finished!')
+  #     end
+  #   end
+  # end
 
   private
 

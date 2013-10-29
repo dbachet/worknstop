@@ -1,5 +1,5 @@
 class TimerView < UIControl
-  attr_accessor :delegate, :timer, :name, :time_request, :color, :colored_circle, :filling_circle, :label_min, :label_sec, :refresh_label_timer, :needle, :delta_angle, :start_transform, :sectors
+  attr_accessor :delegate, :timer, :name, :time_request, :color, :colored_circle, :filling_circle, :label_min, :label_sec, :refresh_label_timer, :needle, :sectors, :current_sector
 
   def initWithFrame(frame, withDelegate: del, withName: name, withTime: time, withColor: color, withCenter: center)
     if super
@@ -10,6 +10,7 @@ class TimerView < UIControl
       self.color        = color
       self.center       = center
       self.sectors      = []
+      self.current_sector = nil
       self.draw_timer
     end
     self
@@ -32,99 +33,71 @@ class TimerView < UIControl
 
     build_sectors
 
+    self.rotate_to_sector(self.time_request)
+
     self.filling_circle.when_tapped do
       was_tapped
     end
 
     self.needle.when_panned do |recognizer|
-      NSLog("recognizer.state: #{recognizer.state}")
       if recognizer.state == 1
-        touch_point = recognizer.locationInView(self)
-        dx = touch_point.x - self.colored_circle.center.x
-        dy = touch_point.y - self.colored_circle.center.y
-        self.delta_angle     = Math.atan2(dy, dx)
-        self.start_transform = recognizer.view.transform
+
       elsif recognizer.state == 2
-        pt      = recognizer.locationInView(self)
-        radians = Math.atan2(recognizer.view.transform.b, recognizer.view.transform.a)
-
-        dx                       = pt.x - self.colored_circle.center.x
-        dy                       = pt.y - self.colored_circle.center.y
-        ang                      = Math.atan2(dy,dx)
-        angle_difference         = self.delta_angle - ang
-        recognizer.view.transform = CGAffineTransformRotate(self.start_transform, -angle_difference)
+        pt  = recognizer.locationInView(self)
+        dx  = pt.x - self.colored_circle.center.x
+        dy  = pt.y - self.colored_circle.center.y
+        ang = Math.atan2(dy,dx)
         # --------------------------------------
-        radians = Math.atan2(recognizer.view.transform.b, recognizer.view.transform.a)
-        new_val = 0.0
-
         current_sector = nil
-        current_sector_mid_value = nil
+        transform_angle = nil
 
         self.sectors.each do |s|
           if s.min_value > 0 && s.max_value < 0
-            if s.max_value > radians || s.min_value < radians
-              if radians > 0
-                new_val = radians - Math::PI
+            if s.max_value > ang || s.min_value < ang
+              if ang > 0
+                transform_angle = ang - Math::PI
               else
-                new_val = Math::PI + radians
+                transform_angle = Math::PI + ang
               end
               current_sector = s.sector
-              current_sector_mid_value = s.mid_value
             end
-          elsif radians > s.min_value && radians < s.max_value
-            new_val        = radians - s.mid_value
+          elsif ang > s.min_value && ang < s.max_value
             current_sector = s.sector
-            current_sector_mid_value = s.mid_value
+            transform_angle = ang - s.mid_value
           end
         end
 
-        NSLog("CHANGED Current sector: #{current_sector}")
-        NSLog("CHANGED Current sector mid value: #{current_sector_mid_value}")
-
-        if radians != current_sector_mid_value
-          UIView.beginAnimations(nil, context: nil)
-          UIView.setAnimationDuration(0.2)
-          t = CGAffineTransformRotate(recognizer.view.transform, -new_val)
-          recognizer.view.transform = t
-          UIView.commitAnimations
+        if !transform_angle.nil?
+          self.current_sector = current_sector
+          self.rotate_to_sector(current_sector)
+          self.label_min.text = current_sector.to_s
         end
-
-        self.label_min.text = current_sector.to_s
       elsif recognizer.state == 3
         update_timer_time_request
-        # radians = Math.atan2(recognizer.view.transform.b, recognizer.view.transform.a)
-        # new_val = 0.0
-
-        # self.sectors.each do |s|
-        #   if s.min_value > 0 && s.max_value < 0
-        #     if s.max_value > radians || s.min_value < radians
-        #       if radians > 0
-        #         new_val = radians - Math::PI
-        #       else
-        #         new_val = Math::PI + radians
-        #       end
-        #       current_sector = s.sector
-        #     end
-        #   elsif radians > s.min_value && radians < s.max_value
-        #     new_val        = radians - s.mid_value
-        #     current_sector = s.sector
-        #   end
-        # end
-
-        # UIView.beginAnimations(nil, context: nil)
-        # UIView.setAnimationDuration(0.2)
-        # t = CGAffineTransformRotate(recognizer.view.transform, -new_val)
-        # recognizer.view.transform = t
-        # UIView.commitAnimations
       end
-
-      # recognizer.view.transform = CGAffineTransformRotate(recognizer.view.transform, -Math::PI/2)
     end
+  end
 
+  def find_sector(sector)
+    result = nil
+    self.sectors.each_with_index do |s, index|
+      result = s if s.sector == sector
+    end
+    result
+  end
+
+  def rotate_to_sector(sector)
+    puts "Rotation to 25 => #{self.find_sector(sector).mid_value} rad"
+    UIView.beginAnimations(nil, context: nil)
+    UIView.setAnimationDuration(0.2)
+    self.needle.transform = CGAffineTransformMakeRotation(self.find_sector(sector).mid_value+Math::PI+0.1)
+    UIView.commitAnimations
   end
 
   def build_sectors
     number_of_sections = 60
+    sections = (1..15).to_a.reverse + (16..60).to_a.reverse
+
     fan_width = Math::PI * 2 / number_of_sections
     mid       = 0
 
@@ -133,7 +106,7 @@ class TimerView < UIControl
       sector.mid_value = mid
       sector.min_value = mid - (fan_width / 2)
       sector.max_value = mid + (fan_width / 2)
-      sector.sector    = i
+      sector.sector    = sections[i-1]
 
       if sector.max_value - fan_width < -Math::PI
         mid = Math::PI
