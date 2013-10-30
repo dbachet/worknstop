@@ -41,7 +41,7 @@ class TimerView < UIControl
 
     self.needle.when_panned do |recognizer|
       if recognizer.state == 1
-
+        stop_timer if self.timer.running?
       elsif recognizer.state == 2
         pt  = recognizer.locationInView(self)
         dx  = pt.x - self.colored_circle.center.x
@@ -74,6 +74,7 @@ class TimerView < UIControl
         end
       elsif recognizer.state == 3
         update_timer_time_request
+        start_timer
       end
     end
   end
@@ -87,7 +88,6 @@ class TimerView < UIControl
   end
 
   def rotate_to_sector(sector)
-    puts "Rotation to 25 => #{self.find_sector(sector).mid_value} rad"
     UIView.beginAnimations(nil, context: nil)
     UIView.setAnimationDuration(0.2)
     self.needle.transform = CGAffineTransformMakeRotation(self.find_sector(sector).mid_value+Math::PI+0.1)
@@ -122,13 +122,21 @@ class TimerView < UIControl
 
   def was_tapped
     if self.timer.running?
-      self.timer.stop
-      stop_async_label_refresh
-      reset_labels
+      stop_timer
     else
-      self.timer.start
-      start_async_label_refresh
+      start_timer
     end
+  end
+
+  def start_timer
+    self.timer.start
+    start_async_label_refresh
+  end
+
+  def stop_timer
+    self.timer.stop
+    stop_async_label_refresh
+    reset_labels
   end
 
   # TODO use only one action for the timer / use userInfo
