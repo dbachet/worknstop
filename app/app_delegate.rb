@@ -12,10 +12,9 @@ class AppDelegate
 
   def application(application, didReceiveLocalNotification:notification)
     if application.applicationState == UIApplicationStateActive
-      position = notification.userInfo[:position]
-      @main_vc.stop_timer(position)
-      SystemSounds.play_system_sound('Glass.aiff')
-      App.alert("#{position.camelize} timer has finished!")
+      name = notification.userInfo[:name]
+      @main_vc.find_timer_view(name).stop_timer
+      # SystemSounds.play_system_sound(UILocalNotificationDefaultSoundName)
     end
   end
 

@@ -10,7 +10,7 @@ class MainController < UIViewController
     @background             = load_background
     @top_timer = TimerView.alloc.initWithFrame([[0, 0], [view.frame.size.width, view.frame.size.height/2]], withDelegate: self, withName: 'top', withTime: 25, withColor: top_clock_color, withCenter: top_clock_center)
 
-    view.addSubview(@background)
+    # view.addSubview(@background)
     view.addSubview(@top_timer)
 
     # @top_filling_circle.when_tapped do
@@ -20,6 +20,14 @@ class MainController < UIViewController
     # @bottom_filling_circle.when_tapped do
     #   timer_was_tapped('bottom')
     # end
+  end
+
+  def find_timer_view(name)
+    if name == 'top'
+      @top_timer
+    elsif name == 'bottom'
+      @bottom_timer
+    end
   end
 
   def load_background

@@ -1,12 +1,11 @@
 class TimerView < UIControl
-  attr_accessor :delegate, :timer, :name, :time_request, :color, :colored_circle, :filling_circle, :label_min, :label_sec, :refresh_label_timer, :needle, :sectors, :current_sector
+  attr_accessor :delegate, :timer, :name, :color, :colored_circle, :filling_circle, :label_min, :label_sec, :refresh_label_timer, :needle, :sectors, :current_sector
 
   def initWithFrame(frame, withDelegate: del, withName: name, withTime: time, withColor: color, withCenter: center)
     if super
       self.delegate     = self
       self.name         = name
-      self.time_request = time
-      self.timer        = Timer.new(requested_time_in_min: self.time_request, name: self.name)
+      self.timer        = Timer.new(requested_time_in_min: time, name: self.name)
       self.color        = color
       self.center       = center
       self.sectors      = []
@@ -19,7 +18,7 @@ class TimerView < UIControl
   def draw_timer
     self.colored_circle   = load_colored_circle(self.color, self.center)
     self.filling_circle   = load_filling_circle
-    self.label_min        = load_label_min(self.time_request)
+    self.label_min        = load_label_min(self.timer.requested_time_in_min)
     self.label_sec        = load_label_sec
     self.needle           = load_needle
 
@@ -33,7 +32,7 @@ class TimerView < UIControl
 
     build_sectors
 
-    self.rotate_to_sector(self.time_request)
+    self.rotate_to_sector(self.timer.requested_time_in_min)
 
     self.filling_circle.when_tapped do
       was_tapped
@@ -152,11 +151,18 @@ class TimerView < UIControl
   def reset_labels
     self.label_min.text = self.timer.requested_time_in_min.to_s
     self.label_sec.text = 'minutes'
+    rotate_to_sector(self.timer.requested_time_in_min)
   end
 
   def refresh_labels
-    self.label_min.text = self.timer.remaining_min.to_s
+    minutes = self.timer.remaining_min
+    self.label_min.text = minutes.to_s
     self.label_sec.text = self.timer.remaining_sec.to_s.rjust(2,'0')
+    if minutes > 0
+      rotate_to_sector(minutes)
+    else
+      rotate_to_sector(60)
+    end
   end
 
   def load_colored_circle(color, center_coordinates)
