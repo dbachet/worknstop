@@ -74,6 +74,7 @@ class TimerView < UIControl
       elsif recognizer.state == 3
         update_timer_time_request
         start_timer
+        record_time_request
       end
     end
   end
@@ -84,6 +85,10 @@ class TimerView < UIControl
       result = s if s.sector == sector
     end
     result
+  end
+
+  def record_time_request
+    App::Persistence['time'] = self.timer.requested_time_in_min
   end
 
   def rotate_to_sector(sector)
