@@ -10,32 +10,30 @@ class Timer
 
   def start
     set_alarm
-    @running = true
+    self.running = true
   end
 
   def set_alarm
-    @alarm_set_at                            = Time.now + (@requested_time_in_min * 60)
-    @notification                            = UILocalNotification.alloc.init
-    @notification.soundName                  = 'alarm.caf'#UILocalNotificationDefaultSoundName
-    @notification.hasAction                  = true
-    @notification.alertAction                = 'wooohoo'
-    @notification.alertBody                  = "You might have to do something now!"
-    @notification.applicationIconBadgeNumber = 1
-    @notification.userInfo                   = { name: @name }
-    @notification.fireDate                   = @alarm_set_at
-    NSLog("Set notification at #{@notification.fireDate}")
+    self.notification                            = UILocalNotification.alloc.init
+    self.notification.soundName                  = UILocalNotificationDefaultSoundName
+    self.notification.hasAction                  = true
+    self.notification.alertAction                = 'wooohoo'
+    self.notification.alertBody                  = "You might have to do something now!"
+    self.notification.applicationIconBadgeNumber = 1
+    self.notification.userInfo                   = { name: self.name }
+    self.notification.fireDate                   = Time.now + (self.requested_time_in_min)
+    NSLog("Set notification at #{self.notification.fireDate}")
     App.shared.scheduleLocalNotification(notification)
   end
 
   def cancel_notification
-    NSLog("Cancel notification #{@notification.userInfo[:name]}")
-    App.shared.cancelLocalNotification(@notification)
-    @notification = nil
+    NSLog("Cancel notification #{self.notification.userInfo[:name]}")
+    App.shared.cancelLocalNotification(self.notification)
     App.shared.setApplicationIconBadgeNumber(0)
   end
 
   def running?
-    @running == true
+    self.running == true && !notification_has_passed?
   end
 
   def stopped?
@@ -43,8 +41,12 @@ class Timer
   end
 
   def stop
-    @running = false
+    self.running = false
     cancel_notification
+  end
+
+  def notification_has_passed?
+    self.notification.fireDate < Time.now
   end
 
   # def ring_bells
@@ -52,10 +54,10 @@ class Timer
   # end
 
   def remaining_min
-    ((@alarm_set_at - Time.now).ceil / 60)
+    ((self.notification.fireDate - Time.now).ceil / 60)
   end
 
   def remaining_sec
-    (@alarm_set_at - Time.now).ceil % 60
+    (self.notification.fireDate - Time.now).ceil % 60
   end
 end

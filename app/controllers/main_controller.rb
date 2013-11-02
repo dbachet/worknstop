@@ -23,6 +23,10 @@ class MainController < UIViewController
     end
   end
 
+  def timer_views
+    [@top_timer]
+  end
+
   def load_background
     background                 = UIImageView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     background.image           = UIImage.imageNamed('transparent-background.png')

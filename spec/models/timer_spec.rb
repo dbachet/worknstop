@@ -49,6 +49,7 @@ describe Timer do
       @subject.start
       @subject.stop
       @subject.running.should == false
+      @subject.alarm_set_at == nil
     end
   end
 
@@ -56,7 +57,7 @@ describe Timer do
     it 'should assign @notification to nil and cancel local notification' do
       @subject.start
       @subject.cancel_notification
-      @subject.notification.should == nil
+      # @subject.notification.should == nil
       App.shared.scheduledLocalNotifications.should == []
       App.shared.applicationIconBadgeNumber.should == 0
     end
@@ -74,7 +75,7 @@ describe Timer do
     it 'should return a string with remaining seconds' do
       @subject.start
       @subject.remaining_sec.should == 0
-      wait 5.0 do
+      wait 5.1 do
         @subject.remaining_sec.should == 55
       end
       @subject.stop
@@ -85,7 +86,7 @@ describe Timer do
     it 'should return a string with remaining min' do
       @subject.start
       @subject.remaining_min.should == 25
-      wait 5.0 do
+      wait 1.0 do
         @subject.remaining_min.should == 24
       end
       @subject.stop
