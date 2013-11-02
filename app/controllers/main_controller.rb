@@ -3,9 +3,9 @@ class MainController < UIViewController
   def viewDidLoad
     super
     top_clock_center    = [view.frame.size.width / 2, view.frame.size.height / 4]
-    top_clock_color     = UIColor.colorWithRed(0.345, green: 0.784, blue: 0.31, alpha: 1)
+    top_clock_color     = BubbleWrap.rgb_color(88, 200, 79)
     bottom_clock_center = [view.frame.size.width / 2, (view.frame.size.height.to_f / 4) * 3]
-    bottom_clock_color  = UIColor.colorWithRed(0.929, green: 0.231, blue: 0.431, alpha: 1)
+    bottom_clock_color  = BubbleWrap.rgb_color(237, 59, 110)
     time_request_in_min = App::Persistence['time'] || 25
 
     @background = load_background
