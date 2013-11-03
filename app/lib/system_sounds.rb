@@ -2,7 +2,7 @@ class SystemSounds
   class << self
 
     #TODO check if these methods are really needed to play system sounds
-    BASE_AUDIO_PATH = "/System/Library/Sounds/"
+    BASE_AUDIO_PATH = "/System/Library/Audio/UISounds/"
     @@system_sounds = {}
 
     def play_system_sound(file_name)

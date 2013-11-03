@@ -7,6 +7,7 @@ class AppDelegate
 
     @window.rootViewController = @main_vc
     @window.makeKeyAndVisible
+
     true
   end
 
@@ -14,7 +15,9 @@ class AppDelegate
     if application.applicationState == UIApplicationStateActive
       name = notification.userInfo[:name]
       @main_vc.find_timer_view(name).stop_timer
-      # SystemSounds.play_system_sound(UILocalNotificationDefaultSoundName)
+
+      # Flash / Vibrate
+      SystemSounds.play_system_sound('sms-received1.caf')
     end
   end
 
