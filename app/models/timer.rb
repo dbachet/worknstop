@@ -21,7 +21,7 @@ class Timer
     self.notification.alertBody                  = "You might have to do something now!"
     self.notification.applicationIconBadgeNumber = 1
     self.notification.userInfo                   = { name: self.name }
-    self.notification.fireDate                   = Time.now + (self.requested_time_in_min)
+    self.notification.fireDate                   = Time.now + (self.requested_time_in_min * 60)
     NSLog("Set notification at #{self.notification.fireDate}")
     App.shared.scheduleLocalNotification(notification)
   end
