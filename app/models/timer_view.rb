@@ -66,7 +66,7 @@ class TimerView < UIControl
           end
         end
 
-        if !transform_angle.nil?
+        if !transform_angle.nil? && !at_edge_sector?(current_sector)
           self.current_sector = current_sector
           self.rotate_to_sector(current_sector)
           self.label_min.text = current_sector.to_s
@@ -77,6 +77,10 @@ class TimerView < UIControl
         record_time_request
       end
     end
+  end
+
+  def at_edge_sector?(current_sector)
+    (self.current_sector == 60 && current_sector < 30) || (self.current_sector == 1 && current_sector > 30)
   end
 
   def find_sector(sector)
