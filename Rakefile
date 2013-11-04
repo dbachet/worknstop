@@ -13,6 +13,7 @@ Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.name                   = 'worknstop'
   app.device_family          = [:iphone, :ipad]
+  app.version                = '0.1'
   app.codesign_certificate   = "iOS Development: Damien Bachet"
   app.provisioning_profile   = "/Users/le_daf/projects/Apple stuff/Timer_dev_profile.mobileprovision"
 
