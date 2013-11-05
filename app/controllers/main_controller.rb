@@ -2,17 +2,21 @@ class MainController < UIViewController
 
   def viewDidLoad
     super
-    top_clock_center    = [view.frame.size.width / 2, view.frame.size.height / 4]
-    top_clock_color     = BubbleWrap.rgb_color(88, 200, 79)
-    bottom_clock_center = [view.frame.size.width / 2, (view.frame.size.height.to_f / 4) * 3]
-    bottom_clock_color  = BubbleWrap.rgb_color(237, 59, 110)
-    time_request_in_min = App::Persistence['time'] || 25
+    timer_view_dimensions      = [view.frame.size.width, view.frame.size.height/2]
+    top_clock_center           = [view.frame.size.width.to_f / 2, view.frame.size.height.to_f / 4]
+    top_clock_color            = BubbleWrap.rgb_color(88, 200, 79)
+    bottom_clock_center        = [view.frame.size.width.to_f / 2, (view.frame.size.height.to_f / 4) * 3]
+    bottom_clock_color         = BubbleWrap.rgb_color(237, 59, 110)
+    top_time_request_in_min    = App::Persistence['top_time'] || 25
+    bottom_time_request_in_min = App::Persistence['bottom_time'] || 5
 
     @background = load_background
-    @top_timer  = TimerView.alloc.initWithFrame([[0, 0], [view.frame.size.width, view.frame.size.height/2]], withDelegate: self, withName: 'top', withTime: time_request_in_min, withColor: top_clock_color, withCenter: top_clock_center)
+    @top_timer  = TimerView.alloc.initWithFrame([[0, 0], timer_view_dimensions], withDelegate: self, withName: 'top', withTime: top_time_request_in_min, withColor: top_clock_color, withCenter: top_clock_center)
+    @bottom_timer  = TimerView.alloc.initWithFrame([[0, view.frame.size.height.to_f/2], timer_view_dimensions], withDelegate: self, withName: 'bottom', withTime: bottom_time_request_in_min, withColor: bottom_clock_color, withCenter: bottom_clock_center)
 
     view.addSubview(@background)
     view.addSubview(@top_timer)
+    view.addSubview(@bottom_timer)
   end
 
   def find_timer_view(name)
@@ -24,7 +28,8 @@ class MainController < UIViewController
   end
 
   def timer_views
-    [@top_timer]
+    # [@top_timer]
+    [@top_timer, @bottom_timer]
   end
 
   def load_background

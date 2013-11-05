@@ -1,14 +1,14 @@
-class TimerView < UIControl
+class TimerView < UIView
   attr_accessor :delegate, :timer, :name, :color, :colored_circle, :filling_circle, :label_min, :label_sec, :refresh_label_timer, :needle, :sectors, :current_sector
 
   def initWithFrame(frame, withDelegate: del, withName: name, withTime: time, withColor: color, withCenter: center)
     if super
-      self.delegate     = self
-      self.name         = name
-      self.timer        = Timer.new(requested_time_in_min: time, name: self.name)
-      self.color        = color
-      self.center       = center
-      self.sectors      = []
+      self.delegate       = self
+      self.name           = name
+      self.timer          = Timer.new(requested_time_in_min: time, name: self.name)
+      self.color          = color
+      self.center         = center
+      self.sectors        = []
       self.current_sector = nil
       self.draw_timer
     end
@@ -104,7 +104,7 @@ class TimerView < UIControl
 
   def build_sectors
     number_of_sections = 60
-    sections = (1..15).to_a.reverse + (16..60).to_a.reverse
+    sections  = (1..15).to_a.reverse + (16..60).to_a.reverse
 
     fan_width = Math::PI * 2 / number_of_sections
     mid       = 0
@@ -154,7 +154,7 @@ class TimerView < UIControl
   end
 
   def stop_async_label_refresh
-    self.refresh_label_timer.invalidate
+    self.refresh_label_timer.invalidate if self.refresh_label_timer
   end
 
   def reset_labels
@@ -175,9 +175,9 @@ class TimerView < UIControl
   end
 
   def load_colored_circle(color, center_coordinates)
-    colored_circle                    = UIView.alloc.initWithFrame([[0, 0], [200, 200]])
+    colored_circle                    = UIView.alloc.initWithFrame([[0,0], [200, 200]])
     colored_circle.layer.cornerRadius = 100
-    colored_circle.center             = center_coordinates
+    colored_circle.center             = [self.frame.size.width/2, self.frame.size.height/2]
     colored_circle.backgroundColor    = color
     colored_circle
   end
@@ -210,16 +210,11 @@ class TimerView < UIControl
   end
 
   def load_needle
-    # self.needle_container           = UIView.alloc.initWithFrame(self.colored_circle.frame)
-    # self.needle_container.backgroundColor = UIColor.blueColor
-    angle_size               = 2 * Math::PI / 60
-
+    angle_size                    = 2 * Math::PI / 60
     self.needle                   = UIView.alloc.initWithFrame(CGRectMake(0, 0, 20, 20))
     self.needle.backgroundColor   = UIColor.redColor
     self.needle.layer.anchorPoint = CGPointMake(6, 0.5)
     self.needle.center            = [self.bounds.size.width/2, self.bounds.size.height/2]
-    # self.needle.layer.position    = CGPointMake(self.colored_circle.bounds.size.width/2.0, self.colored_circle.bounds.size.height/2.0)
-    # self.needle.transform         = CGAffineTransformMakeRotation(angle_size)
     self.needle
   end
 

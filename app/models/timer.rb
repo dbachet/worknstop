@@ -42,16 +42,16 @@ class Timer
 
   def stop
     self.running = false
-    cancel_notification
+    cancel_notification if self.notification
   end
 
   def notification_has_passed?
-    self.notification.fireDate < Time.now
+    if self.notification
+      self.notification.fireDate < Time.now
+    else
+      true
+    end
   end
-
-  # def ring_bells
-  #   SystemSounds.play_system_sound('Glass.aiff')
-  # end
 
   def remaining_min
     ((self.notification.fireDate - Time.now).ceil / 60)
