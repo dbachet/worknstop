@@ -26,6 +26,9 @@ class TimerView < UIView
     self.colored_circle.addSubview(self.label_min)
     self.colored_circle.addSubview(self.label_sec)
 
+    self.colored_circle.layer.borderWidth = 10.0
+    self.colored_circle.layer.borderColor = self.color.CGColor
+
 
     self.addSubview(self.colored_circle)
     self.addSubview(self.needle)
@@ -175,10 +178,9 @@ class TimerView < UIView
   end
 
   def load_colored_circle(color, center_coordinates)
-    colored_circle                    = UIView.alloc.initWithFrame([[0,0], [200, 200]])
-    colored_circle.layer.cornerRadius = 100
+    colored_circle                    = UIView.alloc.initWithFrame([[0,0], [190, 190]])
+    colored_circle.layer.cornerRadius = 95
     colored_circle.center             = [self.frame.size.width/2, self.frame.size.height/2]
-    colored_circle.backgroundColor    = color
     colored_circle
   end
 
@@ -186,6 +188,7 @@ class TimerView < UIView
     filling_circle                    = UIView.alloc.initWithFrame([[10, 10], [180, 180]])
     filling_circle.layer.cornerRadius = 90
     filling_circle.backgroundColor    = UIColor.darkGrayColor
+    filling_circle.alpha              = 0.1
     filling_circle
   end
 
@@ -212,8 +215,8 @@ class TimerView < UIView
   def load_needle
     angle_size                    = 2 * Math::PI / 60
     self.needle                   = UIView.alloc.initWithFrame(CGRectMake(0, 0, 20, 20))
-    self.needle.backgroundColor   = UIColor.redColor
-    self.needle.layer.anchorPoint = CGPointMake(6, 0.5)
+    self.needle.backgroundColor   = UIColor.whiteColor
+    self.needle.layer.anchorPoint = CGPointMake(5.25, 0.5)
     self.needle.center            = [self.bounds.size.width/2, self.bounds.size.height/2]
     self.needle
   end
