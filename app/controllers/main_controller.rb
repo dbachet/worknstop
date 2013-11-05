@@ -7,8 +7,8 @@ class MainController < UIViewController
     top_clock_color            = BubbleWrap.rgb_color(88, 200, 79)
     bottom_clock_center        = [view.frame.size.width.to_f / 2, (view.frame.size.height.to_f / 4) * 3]
     bottom_clock_color         = BubbleWrap.rgb_color(237, 59, 110)
-    top_time_request_in_min    = App::Persistence['top_time'] || 25
-    bottom_time_request_in_min = App::Persistence['bottom_time'] || 5
+    top_time_request_in_min    = App::Persistence['top_timer'] || 25
+    bottom_time_request_in_min = App::Persistence['bottom_timer'] || 5
 
     @background = load_background
     @top_timer  = TimerView.alloc.initWithFrame([[0, 0], timer_view_dimensions], withDelegate: self, withName: 'top', withTime: top_time_request_in_min, withColor: top_clock_color, withCenter: top_clock_center)

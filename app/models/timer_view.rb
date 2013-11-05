@@ -95,7 +95,7 @@ class TimerView < UIView
   end
 
   def record_time_request
-    App::Persistence['time'] = self.timer.requested_time_in_min
+    App::Persistence["#{self.name}_timer"] = self.timer.requested_time_in_min
   end
 
   def rotate_to_sector(sector)
