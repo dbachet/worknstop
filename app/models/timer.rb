@@ -17,8 +17,8 @@ class Timer
     self.notification                            = UILocalNotification.alloc.init
     self.notification.soundName                  = UILocalNotificationDefaultSoundName
     self.notification.hasAction                  = true
-    self.notification.alertAction                = 'wooohoo'
-    self.notification.alertBody                  = "You might have to do something now!"
+    self.notification.alertAction                = 'Ringing'
+    self.notification.alertBody                  = "Time's UP on #{self.name} timer!"
     self.notification.applicationIconBadgeNumber = 1
     self.notification.userInfo                   = { name: self.name }
     self.notification.fireDate                   = Time.now + (self.requested_time_in_min * 60)
