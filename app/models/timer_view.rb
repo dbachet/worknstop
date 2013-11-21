@@ -17,28 +17,36 @@ class TimerView < UIView
 
   def draw_timer
     self.colored_circle   = load_colored_circle(self.color, self.center)
-    self.filling_circle   = load_filling_circle
+    # self.needle           = load_needle
+    build_needle
+    # self.filling_circle   = load_filling_circle
+    self.button           = load_button
     self.label_min        = load_label_min(self.timer.requested_time_in_min)
     self.label_sec        = load_label_sec
-    self.needle           = load_needle
 
-    self.colored_circle.addSubview(self.filling_circle)
-    self.colored_circle.addSubview(self.label_min)
-    self.colored_circle.addSubview(self.label_sec)
+    # self.colored_circle.addSubview(self.filling_circle)
+    self.button.addSubview(self.label_min)
+    self.button.addSubview(self.label_sec)
 
     self.colored_circle.layer.borderWidth = 10.0
     self.colored_circle.layer.borderColor = self.color.CGColor
 
 
     self.addSubview(self.colored_circle)
+    self.addSubview(self.button)
     self.addSubview(self.needle)
+    # self.addSubview(self.filling_circle)
+
 
     build_sectors
 
-    self.rotate_to_sector(self.timer.requested_time_in_min)
+    # self.rotate_to_sector(self.timer.requested_time_in_min)
 
-    self.filling_circle.when_tapped do
-      was_tapped
+    self.button.when_tapped do |recognizer|
+      point = recognizer.locationInView(self)
+      if calculateDistanceFromCenter(point) < 75
+        was_tapped
+      end
     end
 
     self.needle.when_panned do |recognizer|
@@ -80,6 +88,13 @@ class TimerView < UIView
         record_time_request
       end
     end
+  end
+
+  def calculateDistanceFromCenter(point)
+    center = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2)
+    dx     = point.x - center.x
+    dy     = point.y - center.y
+    Math.sqrt(dx**2 + dy**2)
   end
 
   def at_edge_sector?(current_sector)
@@ -184,17 +199,27 @@ class TimerView < UIView
     colored_circle
   end
 
-  def load_filling_circle
-    filling_circle                    = UIView.alloc.initWithFrame([[10, 10], [180, 180]])
-    filling_circle.layer.cornerRadius = 90
+  def load_button
+    filling_circle                    = UIView.alloc.initWithFrame([[0, 0], [150, 150]])
+    filling_circle.center             = [self.frame.size.width/2, self.frame.size.height/2]
+    filling_circle.layer.cornerRadius = 75
     filling_circle.backgroundColor    = UIColor.darkGrayColor
-    filling_circle.alpha              = 0.1
+    filling_circle.alpha              = 1
     filling_circle
   end
 
+  # def load_filling_circle
+  #   filling_circle                    = UIView.alloc.initWithFrame([[0, 0], [170, 170]])
+  #   filling_circle.center             = [self.frame.size.width/2, self.frame.size.height/2]
+  #   filling_circle.layer.cornerRadius = 85
+  #   filling_circle.backgroundColor    = UIColor.clearColor
+  #   filling_circle.alpha              = 1
+  #   filling_circle
+  # end
+
   def load_label_min(time)
     timer_label               = UILabel.alloc.initWithFrame([[0,0], [100, 30]])
-    timer_label.center        = [self.colored_circle.bounds.size.width/2, self.colored_circle.bounds.size.height/2]
+    timer_label.center        = [self.button.bounds.size.width/2, self.button.bounds.size.height/2]
     timer_label.font          = UIFont.fontWithName('Avenir-Light', size: 34)
     timer_label.text          = time.to_s
     timer_label.textAlignment = UITextAlignmentCenter
@@ -204,7 +229,7 @@ class TimerView < UIView
 
   def load_label_sec
     timer_label               = UILabel.alloc.initWithFrame([[0,0], [100, 30]])
-    timer_label.center        = [self.colored_circle.bounds.size.width/2, self.colored_circle.bounds.size.height/2+50]
+    timer_label.center        = [self.button.bounds.size.width/2, self.button.bounds.size.height/2+50]
     timer_label.font          = UIFont.fontWithName('Avenir-Light', size: 17)
     timer_label.text          = 'minutes'
     timer_label.textAlignment = UITextAlignmentCenter
@@ -214,11 +239,19 @@ class TimerView < UIView
 
   def load_needle
     angle_size                    = 2 * Math::PI / 60
-    self.needle                   = UIView.alloc.initWithFrame(CGRectMake(0, 0, 20, 20))
-    self.needle.backgroundColor   = UIColor.whiteColor
-    self.needle.layer.anchorPoint = CGPointMake(5.25, 0.5)
+    self.needle                   = UIImageView.alloc.initWithFrame(CGRectMake(0, 0, 75, 75))
+    self.needle.image             = UIImage.imageNamed('needle.png')
+    self.needle.backgroundColor   = UIColor.clearColor
+    self.needle.layer.anchorPoint = CGPointMake(2, 0.5)
     self.needle.center            = [self.bounds.size.width/2, self.bounds.size.height/2]
     self.needle
+  end
+
+  def build_needle
+    self.needle                   = NeedleView.alloc.initWithFrame(CGRectMake(0, 0, 77, 77))
+    self.needle.backgroundColor   = UIColor.clearColor
+    self.needle.layer.anchorPoint = CGPointMake(2, 0.5)
+    self.needle.center            = [self.bounds.size.width/2, self.bounds.size.height/2]
   end
 
   private
