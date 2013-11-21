@@ -1,5 +1,5 @@
 class TimerView < UIView
-  attr_accessor :delegate, :timer, :name, :color, :colored_circle, :filling_circle, :label_min, :label_sec, :refresh_label_timer, :needle, :sectors, :current_sector
+  attr_accessor :delegate, :timer, :name, :color, :colored_circle, :filling_circle, :label_min, :label_sec, :refresh_label_timer, :needle, :sectors, :current_sector, :button
 
   def initWithFrame(frame, withDelegate: del, withName: name, withTime: time, withColor: color, withCenter: center)
     if super
