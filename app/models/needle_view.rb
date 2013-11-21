@@ -24,7 +24,7 @@ class NeedleView < UIView
 
     CGContextMoveToPoint(self.context, 70.3, 54)
     CGContextAddArcToPoint(self.context, 68.5, 39, 70.3, 24, 128)
-    # CGContextAddLineToPoint(self.context, 70.3, 24)
+    CGContextSetShadow(self.context, CGSizeMake(0, 0), 5);
     CGContextAddLineToPoint(self.context, 47, 39)
     CGContextAddLineToPoint(self.context, 70.3, 54)
 
@@ -43,18 +43,18 @@ class NeedleView < UIView
 
     #*************** grid help ***************#
 
-    color = UIColor.redColor.CGColor
-    CGContextSetStrokeColorWithColor(self.context, color)
-    CGContextMoveToPoint(self.context, 77, 55)
-    CGContextAddLineToPoint(self.context, 0, 55)
-    CGContextMoveToPoint(self.context, 77, 39)
-    CGContextAddLineToPoint(self.context, 0, 39)
-    CGContextMoveToPoint(self.context, 77, 23)
-    CGContextAddLineToPoint(self.context, 0, 23)
+    # color = UIColor.redColor.CGColor
+    # CGContextSetStrokeColorWithColor(self.context, color)
+    # CGContextMoveToPoint(self.context, 77, 55)
+    # CGContextAddLineToPoint(self.context, 0, 55)
+    # CGContextMoveToPoint(self.context, 77, 39)
+    # CGContextAddLineToPoint(self.context, 0, 39)
+    # CGContextMoveToPoint(self.context, 77, 23)
+    # CGContextAddLineToPoint(self.context, 0, 23)
     # CGContextMoveToPoint(self.context, 68.5, 77)
     # CGContextAddLineToPoint(self.context, 68.5, 0)
 
-    CGContextStrokePath(self.context)
+    # CGContextStrokePath(self.context)
     #*************** grid help ***************#
   end
 end
