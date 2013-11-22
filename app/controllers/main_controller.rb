@@ -1,5 +1,7 @@
 class MainController < UIViewController
 
+  attr_accessor :background
+
   def viewDidLoad
     super
     timer_view_dimensions      = [view.frame.size.width, view.frame.size.height/2]
@@ -11,9 +13,10 @@ class MainController < UIViewController
     bottom_time_request_in_min = App::Persistence['bottom_timer'] || 5
 
     load_background
-    @top_timer  = TimerView.alloc.initWithFrame([[0, 0], timer_view_dimensions], withDelegate: self, withName: 'green', withTime: top_time_request_in_min, withColor: top_clock_color, withCenter: top_clock_center)
-    @bottom_timer  = TimerView.alloc.initWithFrame([[0, view.frame.size.height.to_f/2], timer_view_dimensions], withDelegate: self, withName: 'pink', withTime: bottom_time_request_in_min, withColor: bottom_clock_color, withCenter: bottom_clock_center)
+    @top_timer  = TimerView.alloc.initWithFrame([[0, 0], timer_view_dimensions], withDelegate: self, withName: 'top', withTime: top_time_request_in_min, withColor: top_clock_color, withCenter: top_clock_center)
+    @bottom_timer  = TimerView.alloc.initWithFrame([[0, view.frame.size.height.to_f/2], timer_view_dimensions], withDelegate: self, withName: 'bottom', withTime: bottom_time_request_in_min, withColor: bottom_clock_color, withCenter: bottom_clock_center)
 
+    view.addSubview(self.background)
     view.addSubview(@top_timer)
     view.addSubview(@bottom_timer)
   end
@@ -31,6 +34,9 @@ class MainController < UIViewController
   end
 
   def load_background
-    self.view.backgroundColor = UIColor.colorWithPatternImage(UIImage.imageNamed('transparent-background.png'))
+    self.background                 = UIImageView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+    image = UIImage.imageNamed('transparent-background.png')
+    self.background.backgroundColor = UIColor.colorWithPatternImage(image)
+    self.view.backgroundColor = UIColor.darkGrayColor
   end
 end

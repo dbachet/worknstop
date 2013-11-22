@@ -17,7 +17,7 @@ class Timer
     self.notification                            = UILocalNotification.alloc.init
     self.notification.soundName                  = UILocalNotificationDefaultSoundName
     self.notification.hasAction                  = true
-    self.notification.alertAction                = 'Ringing'
+    self.notification.alertAction                = 'See WorkNStop'
     self.notification.alertBody                  = "Time's UP on #{self.name} timer!"
     self.notification.applicationIconBadgeNumber = 1
     self.notification.userInfo                   = { name: self.name }
