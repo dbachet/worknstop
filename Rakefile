@@ -11,9 +11,10 @@ end
 
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
-  app.name                   = 'worknstop'
+  app.name                   = "WorkNStop"
   app.device_family          = [:iphone, :ipad]
   app.version                = '0.2.3'
+  app.interface_orientations = [:portrait]
   app.provisioning_profile   = "/Users/le_daf/projects/Apple stuff/Timer_dev_profile.mobileprovision"
 
   # TestFlight config
