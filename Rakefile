@@ -14,7 +14,7 @@ Motion::Project::App.setup do |app|
   app.name                   = "timers.io"
   app.device_family          = [:iphone]
   app.icons                  = ["icon.png"]
-  app.version                = '0.2.3'
+  app.version                = '0.2.4'
   app.interface_orientations = [:portrait]
   app.provisioning_profile   = "/Users/le_daf/projects/Apple stuff/Timer_dev_profile.mobileprovision"
 
