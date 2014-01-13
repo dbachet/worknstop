@@ -5,6 +5,7 @@ require 'motion-testflight'
 
 begin
   require 'bundler'
+  require 'bubble-wrap'
   Bundler.require
 rescue LoadError
 end

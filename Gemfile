@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
 gem 'rake'
-gem "bubble-wrap", "~> 1.3.0", :require => 'bubble-wrap/all'
+gem 'bubble-wrap', '~> 1.4.0'
