@@ -2,10 +2,13 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     application.cancelAllLocalNotifications
     resetIconBadge
-    @window                    = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    @main_vc                   = MainController.alloc.initWithNibName(nil, bundle: nil)
+    Teacup::Appearance.apply
 
-    @window.rootViewController = @main_vc
+    @window                    = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+    @mainController            = MainController.alloc.init
+    @window.rootViewController = UINavigationController.alloc.initWithRootViewController(@mainController)
+
+    @window.rootViewController.wantsFullScreenLayout = true
     @window.makeKeyAndVisible
 
     true

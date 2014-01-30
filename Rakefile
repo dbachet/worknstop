@@ -2,10 +2,12 @@
 $:.unshift("/Library/RubyMotion/lib")
 require 'motion/project/template/ios'
 require 'motion-testflight'
+require 'bubble-wrap'
+require 'teacup'
+require 'geomotion'
 
 begin
   require 'bundler'
-  require 'bubble-wrap'
   Bundler.require
 rescue LoadError
 end

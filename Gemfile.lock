@@ -2,11 +2,15 @@ GEM
   remote: https://rubygems.org/
   specs:
     bubble-wrap (1.4.0)
+    geomotion (0.13.2)
     rake (10.1.0)
+    teacup (2.1.13)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   bubble-wrap (~> 1.4.0)
+  geomotion
   rake
+  teacup
