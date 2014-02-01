@@ -83,9 +83,11 @@ class TimerView < UIView
           self.current_sector = current_sector
           self.rotate_to_sector(current_sector)
           self.label_min.text = current_sector.to_s
+          update_time_request
+          update_label_sec
         end
       elsif recognizer.state == 3
-        update_timer_time_request
+        update_time_request
         start_timer
         record_time_request
       end
@@ -157,6 +159,7 @@ class TimerView < UIView
 
   def start_timer
     self.timer.start
+    update_label_sec('00')
     start_async_label_refresh
     colored_circle.apply_stylename(:shadow)
   end
@@ -179,8 +182,8 @@ class TimerView < UIView
   end
 
   def reset_labels
-    self.label_min.text = self.timer.requested_time_in_min.to_s
-    self.label_sec.text = 'minutes'
+    self.label_min.text = timer.requested_time_in_min.to_s
+    update_label_sec
     rotate_to_sector(self.timer.requested_time_in_min)
   end
 
@@ -197,7 +200,21 @@ class TimerView < UIView
 
   private
 
-  def update_timer_time_request
-    self.timer.requested_time_in_min = self.label_min.text.to_i
+  def update_time_request(minutes = nil)
+    self.timer.requested_time_in_min = if minutes
+      minutes
+    else
+      current_sector
+    end
+  end
+
+  def update_label_sec(string = nil)
+    self.label_sec.text = if string
+      string
+    elsif timer.requested_time_in_min < 2
+      'minute'
+    else
+      'minutes'
+    end
   end
 end
