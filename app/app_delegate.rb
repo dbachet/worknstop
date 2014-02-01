@@ -17,7 +17,7 @@ class AppDelegate
   def application(application, didReceiveLocalNotification:notification)
     if application.applicationState == UIApplicationStateActive
       name = notification.userInfo[:name]
-      @main_vc.find_timer_view(name).stop_timer
+      @mainController.find_timer_view(name).stop_timer
 
       # Flash / Vibrate
       SystemSounds.play_system_sound('sms-received1.caf')
@@ -27,7 +27,7 @@ class AppDelegate
   def applicationWillEnterForeground(application)
     resetIconBadge
 
-    @main_vc.timer_views.each do |timer_view|
+    @mainController.timers.each do |timer_view|
       timer_view.stop_timer if timer_view.timer.notification_has_passed?
     end
   end

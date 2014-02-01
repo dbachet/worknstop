@@ -1,6 +1,42 @@
 class TimerView < UIView
   attr_accessor :delegate, :timer, :name, :color, :colored_circle, :filling_circle, :label_min, :label_sec, :refresh_label_timer, :needle, :sectors, :current_sector, :button, :fan_width
 
+  def initWithFrame(frame, withDelegate: del, withName: name, withTime: time, withColor: color)
+
+    super.tap do |_super|
+      if _super
+        self.delegate       = self
+        self.name           = name
+        self.timer          = Timer.new(requested_time_in_min: time, name: name)
+        self.color          = color
+        self.center         = center
+        self.sectors        = []
+        self.current_sector = nil
+
+        self.colored_circle = subview(UIView, :colored_circle)
+
+        self.needle         = subview(UIImageView, :needle, frame: [[0,0],[needle_size, needle_size]])
+
+        self.button         = subview(UIView, :button)
+
+        self.label_min      = subview(UILabel, :label_min, text: timer.requested_time_in_min.to_s)
+
+        self.label_sec      = subview(UILabel, :label_sec)
+        draw_timer
+      end
+    end
+
+    self
+  end
+
+  def needle_size
+    if Device.iphone?
+      77
+    else
+      115.5
+    end
+  end
+
   def draw_timer
     self.colored_circle.layer.borderColor = self.color.CGColor
 

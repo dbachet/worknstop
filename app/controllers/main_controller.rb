@@ -6,7 +6,7 @@ class MainController < UIViewController
   layout :root do
 
     self.scroll_view = subview(UIScrollView, :scroll_view) do
-      subview(UIImageView, :background, frame: UIScreen.mainScreen.bounds)
+      subview(UIImageView, :background)
       2.times.each_with_index do |timer, index|
         build_timer
       end
@@ -16,9 +16,7 @@ class MainController < UIViewController
   def viewDidLayoutSubviews
     super
     set_content_size
-
     set_timer_center
-    timers.each(&:draw_timer)
   end
 
   def viewDidLoad
@@ -33,57 +31,10 @@ class MainController < UIViewController
   end
 
   def find_timer_view(name)
-    if name == 'top'
-      @top_timer
-    elsif name == 'bottom'
-      @bottom_timer
-    end
-  end
-
-  def timer_views
-    [@top_timer, @bottom_timer]
-  end
-
-  def load_background
-    self.background                 = UIImageView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    image                           = UIImage.imageNamed('transparent-background.png')
-    self.background.backgroundColor = UIColor.colorWithPatternImage(image)
-    self.view.backgroundColor       = UIColor.darkGrayColor
-    self.background
+    timers.select { |timer| timer.name == name }.first
   end
 
   private
-
-  def build_timer
-    needle_size = if Device.iphone?
-      77
-    else
-      115.5
-    end
-
-    _timer = build_timer_view do |new_timer|
-      new_timer.colored_circle = subview(UIView, :colored_circle)
-      new_timer.needle         = subview(UIImageView, :needle, frame: [[0,0],[needle_size, needle_size]])
-      new_timer.button         = subview(UIView, :button)
-      new_timer.label_min      = subview(UILabel, :label_min, text: new_timer.timer.requested_time_in_min.to_s)
-      new_timer.label_sec      = subview(UILabel, :label_sec)
-    end
-
-    (self.timers ||= []) << _timer
-  end
-
-  def build_timer_view
-    subview(TimerView, :a_timer,
-            backgroundColor: UIColor.grayColor,
-            delegate: self,
-            name: 'names[index]',
-            sectors: [],
-            current_sector: nil,
-            timer: Timer.new(requested_time_in_min: 5, name: 'names[index]'),
-            color: BubbleWrap.rgb_color(88, 200, 79)) do |timer|
-      yield timer
-    end
-  end
 
   def add_timer
     layout(scroll_view) do
@@ -94,17 +45,31 @@ class MainController < UIViewController
     timers.last.draw_timer
   end
 
+  def build_timer
+    _timer = TimerView.alloc.initWithFrame([[0, 0], [0, 0]], withDelegate: self,
+                                           withName: (nb_timers + 1).to_s, withTime: 5,
+                                           withColor: BubbleWrap.rgb_color(88, 200, 79))
+
+    (self.timers ||= []) << subview(_timer, :a_timer)
+  end
+
+  def nb_timers
+    (self.timers ||= []).size
+  end
+
   def set_content_size
     scroll_view.contentSize = [self.view.frame.size.width, timers.size * timer_height]
   end
 
   def set_timer_center
     timers.each_with_index do |timer, index|
-      if index != 0
-        timer.center = [center_x, ((first_timer_center_y + timer_height * (index)))]
-      else
+      if index == 0
         timer.center = [center_x, first_timer_center_y]
+      else
+        timer.center = [center_x, ((first_timer_center_y + timer_height * (index)))]
       end
+
+      puts "timer nr. #{index}  - Center: #{timer.center.x} - #{timer.center.y}"
     end
   end
 

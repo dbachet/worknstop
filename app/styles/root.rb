@@ -18,13 +18,15 @@ Teacup::Stylesheet.new :root do
     label_sec_font_size = 25
     label_offset = 75
     circle_border_width = 15.0
+    backgroundImage = UIImage.imageNamed('transparent-background.png')
   end
 
   style :root,
     backgroundColor: UIColor.darkGrayColor
 
   style :background,
-    backgroundColor: UIColor.colorWithPatternImage(backgroundImage)
+    backgroundColor: UIColor.colorWithPatternImage(backgroundImage),
+    frame: UIScreen.mainScreen.bounds
 
   style :scroll_view,
     scrollEnabled: true,
@@ -33,37 +35,20 @@ Teacup::Stylesheet.new :root do
   style :a_timer,
     width: '100%',
     height: '50% - 32'
-    # constraints: [
-    #   :full_width,
-    #   # constrain(:center_x).equals(:root, :center_x),
-    #   # constrain(:center_y).equals(:first_view, :center_y).plus(400),
-    #   constrain(:height).equals(:root, :height).minus(32).times(0.5)
-    # ]
-  style :more_timer_button,
-    constraints: [
-      constrain_left(0),
-      constrain_width(100),
-      constrain_height(100),
-      constrain(:bottom).equals(:root, :bottom),
-    ]
 
   style :colored_circle,
     width: circle_size,
     height: circle_size,
     center_x: '50%',
     center_y: '50%',
-    # backgroundColor: BubbleWrap.rgb_color(88, 200, 79),
     layer: {
       cornerRadius: circle_size / 2,
       borderWidth: circle_border_width
     }
 
-  # style :something
-
   style :needle,
     center_x: '50%',
     center_y: '50%',
-    # frame: [[0,0],[needle_size, needle_size]],
     image: UIImage.imageNamed('hand.png'),
     layer: {
       anchorPoint: CGPointMake(2, 0.5)
@@ -98,5 +83,4 @@ Teacup::Stylesheet.new :root do
     font: UIFont.fontWithName('Avenir-Light', size: label_sec_font_size),
     textAlignment: UITextAlignmentCenter,
     textColor: UIColor.whiteColor
-
 end

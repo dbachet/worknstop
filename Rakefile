@@ -15,7 +15,7 @@ end
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.name                   = "timers.io"
-  app.device_family          = [:iphone]
+  app.device_family          = [:ipad]
   app.icons                  = ["icon.png", "icon-120.png"]
   app.version                = '0.2.4'
   app.interface_orientations = [:portrait]
