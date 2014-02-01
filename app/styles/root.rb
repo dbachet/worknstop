@@ -43,7 +43,7 @@ Teacup::Stylesheet.new :root do
     center_y: '50%',
     layer: {
       cornerRadius: circle_size / 2,
-      borderWidth: circle_border_width
+      borderWidth: circle_border_width,
     }
 
   style :needle,
@@ -83,4 +83,16 @@ Teacup::Stylesheet.new :root do
     font: UIFont.fontWithName('Avenir-Light', size: label_sec_font_size),
     textAlignment: UITextAlignmentCenter,
     textColor: UIColor.whiteColor
+
+  style :shadow,
+    layer: {
+      shadowOpacity: 0.6,
+      shadowColor: BubbleWrap.rgb_color(102, 175, 233).CGColor,
+      shadowOffset: [0, 0]
+    }
+
+  style :unset_shadow,
+    layer: {
+      shadowOpacity: 0
+    }
 end

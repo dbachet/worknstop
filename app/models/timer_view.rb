@@ -158,12 +158,14 @@ class TimerView < UIView
   def start_timer
     self.timer.start
     start_async_label_refresh
+    colored_circle.apply_stylename(:shadow)
   end
 
   def stop_timer
     self.timer.stop
     stop_async_label_refresh
     reset_labels
+    colored_circle.apply_stylename(:unset_shadow)
   end
 
   # TODO use only one action for the timer / use userInfo
