@@ -1,6 +1,6 @@
 class MainController < UIViewController
 
-  attr_accessor :background, :timers, :scroll_view, :more_timer_button
+  attr_accessor :background, :timers, :scroll_view, :more_timer_button, :colors
   stylesheet :root
 
   layout :root do
@@ -48,13 +48,22 @@ class MainController < UIViewController
   def build_timer
     _timer = TimerView.alloc.initWithFrame([[0, 0], [0, 0]], withDelegate: self,
                                            withName: (nb_timers + 1).to_s, withTime: 5,
-                                           withColor: BubbleWrap.rgb_color(88, 200, 79))
+                                           withColor: next_color)
 
     (self.timers ||= []) << subview(_timer, :a_timer)
   end
 
   def nb_timers
     (self.timers ||= []).size
+  end
+
+  def next_color
+    self.colors ||= [{r: 245, g: 132, b: 27}, {r: 42, g: 130, b: 197}, {r: 100, g: 51, b: 110}, {r: 23, g: 48, b: 105}, {r: 87, g: 87, b: 92}, {r: 224, g: 113, b: 123}, {r: 69, g: 125, b: 36}, {r: 145, g: 78, b: 27} ]
+
+    _color      = colors[nb_timers]
+    self.colors << _color
+
+    color = BubbleWrap.rgb_color(_color[:r], _color[:g], _color[:b])
   end
 
   def set_content_size
