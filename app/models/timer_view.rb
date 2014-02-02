@@ -1,5 +1,5 @@
 class TimerView < UIView
-  attr_accessor :delegate, :timer, :name, :color, :colored_circle, :filling_circle, :label_min, :label_sec, :refresh_label_timer, :needle, :sectors, :current_sector, :button, :fan_width
+  attr_accessor :delegate, :timer, :name, :color, :colored_circle, :filling_circle, :label_min, :label_sec, :refresh_label_timer, :refresh_label_estimated_time_timer, :needle, :sectors, :current_sector, :button, :fan_width, :label_estimated_time
 
   def initWithFrame(frame, withDelegate: del, withName: name, withTime: time, withColor: color)
 
@@ -13,15 +13,17 @@ class TimerView < UIView
         self.sectors        = []
         self.current_sector = nil
 
-        self.colored_circle = subview(UIView, :colored_circle)
+        self.colored_circle       = subview(UIView, :colored_circle)
 
-        self.needle         = subview(UIImageView, :needle, frame: [[0,0],[needle_size, needle_size]])
+        self.needle               = subview(UIImageView, :needle, frame: [[0,0],[needle_size, needle_size]])
 
-        self.button         = subview(UIView, :button)
+        self.button               = subview(UIView, :button)
 
-        self.label_min      = subview(UILabel, :label_min, text: timer.requested_time_in_min.to_s)
+        self.label_estimated_time = subview(UILabel, :label_estimated_time, text: timer.estimated_time.to_s)
 
-        self.label_sec      = subview(UILabel, :label_sec)
+        self.label_min            = subview(UILabel, :label_min, text: timer.requested_time_in_min.to_s)
+
+        self.label_sec            = subview(UILabel, :label_sec)
         draw_timer
       end
     end
@@ -52,14 +54,18 @@ class TimerView < UIView
     end
 
     self.needle.when_panned do |recognizer|
+
+      # Handling first touch on screen
       if recognizer.state == 1
         stop_timer if self.timer.running?
+
+      # Handling following touches on screen
       elsif recognizer.state == 2
         pt  = recognizer.locationInView(self)
         dx  = pt.x - self.colored_circle.center.x
         dy  = pt.y - self.colored_circle.center.y
         ang = Math.atan2(dy,dx)
-        # --------------------------------------
+
         current_sector = nil
         transform_angle = nil
 
@@ -82,16 +88,21 @@ class TimerView < UIView
         if !transform_angle.nil? && !at_edge_sector?(current_sector)
           self.current_sector = current_sector
           self.rotate_to_sector(current_sector)
-          self.label_min.text = current_sector.to_s
+          update_label_min(current_sector.to_s)
           update_time_request
           update_label_sec
+          update_timer_estimated_time
         end
+
+      # Handling last touch on screen
       elsif recognizer.state == 3
         update_time_request
         start_timer
         record_time_request
       end
     end
+
+    async_label_estimated_time_refresh
   end
 
   def calculateDistanceFromCenter(point)
@@ -177,20 +188,26 @@ class TimerView < UIView
     NSRunLoop.mainRunLoop.addTimer(self.refresh_label_timer, forMode: NSRunLoopCommonModes)
   end
 
+  def async_label_estimated_time_refresh
+    self.refresh_label_estimated_time_timer = NSTimer.timerWithTimeInterval(1.0, target: self, selector: 'update_timer_estimated_time', userInfo: nil, repeats: true)
+    NSRunLoop.mainRunLoop.addTimer(self.refresh_label_estimated_time_timer, forMode: NSRunLoopCommonModes)
+  end
+
   def stop_async_label_refresh
-    self.refresh_label_timer.invalidate if self.refresh_label_timer
+    refresh_label_timer.invalidate if refresh_label_timer
   end
 
   def reset_labels
-    self.label_min.text = timer.requested_time_in_min.to_s
+    update_label_min
     update_label_sec
-    rotate_to_sector(self.timer.requested_time_in_min)
+    update_timer_estimated_time
+    rotate_to_sector(timer.requested_time_in_min)
   end
 
   def refresh_labels
-    minutes = self.timer.remaining_min
-    self.label_min.text = minutes.to_s
-    self.label_sec.text = self.timer.remaining_sec.to_s.rjust(2,'0')
+    minutes = timer.remaining_min
+    update_label_min(minutes.to_s)
+    self.label_sec.text = timer.remaining_sec.to_s.rjust(2,'0')
     if minutes > 0
       rotate_to_sector(minutes)
     else
@@ -216,5 +233,17 @@ class TimerView < UIView
     else
       'minutes'
     end
+  end
+
+  def update_label_min(string = nil)
+    self.label_min.text = if string
+      string
+    else
+      timer.requested_time_in_min.to_s
+    end
+  end
+
+  def update_timer_estimated_time
+    self.label_estimated_time.text = timer.estimated_time
   end
 end

@@ -54,10 +54,24 @@ class Timer
   end
 
   def remaining_min
-    ((self.notification.fireDate - Time.now).ceil / 60)
+    remaining_time_in_sec / 60
   end
 
   def remaining_sec
-    (self.notification.fireDate - Time.now).ceil % 60
+    remaining_time_in_sec % 60
+  end
+
+  def remaining_time_in_sec
+    (self.notification.fireDate - Time.now).ceil
+  end
+
+  def estimated_time
+    remaining_sec_to_requested_time  = if running?
+      remaining_time_in_sec
+    else
+      requested_time_in_min * 60
+    end
+
+    (Time.now + remaining_sec_to_requested_time).strftime("%I:%M %p")
   end
 end

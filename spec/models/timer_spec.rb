@@ -72,7 +72,7 @@ describe Timer do
   end
 
   describe '#remaining_sec' do
-    it 'should return a string with remaining seconds' do
+    it 'should return a integer with remaining seconds' do
       @subject.start
       @subject.remaining_sec.should == 0
       wait 5.1 do
@@ -83,12 +83,21 @@ describe Timer do
   end
 
   describe '#remaining_min' do
-    it 'should return a string with remaining min' do
+    it 'should return a integer with remaining min' do
       @subject.start
       @subject.remaining_min.should == 25
       wait 1.0 do
         @subject.remaining_min.should == 24
       end
+      @subject.stop
+    end
+  end
+
+  describe '#estimated_time' do
+    it 'should return a string with estimated ringing time' do
+      @subject.start
+      estimated_time = Time.now + @subject.remaining_time_in_sec
+      @subject.estimated_time.should == estimated_time.strftime("%I:%M %p")
       @subject.stop
     end
   end

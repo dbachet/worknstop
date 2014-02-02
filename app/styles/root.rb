@@ -84,6 +84,15 @@ Teacup::Stylesheet.new :root do
     textAlignment: UITextAlignmentCenter,
     textColor: UIColor.whiteColor
 
+  style :label_estimated_time,
+    width: label_x,
+    height: label_y,
+    center_x: '50%',
+    center_y: "50% - #{label_offset}",
+    font: UIFont.fontWithName('Avenir-Light', size: label_sec_font_size),
+    textAlignment: UITextAlignmentCenter,
+    textColor: UIColor.whiteColor
+
   style :shadow,
     layer: {
       shadowOpacity: 0.6,
